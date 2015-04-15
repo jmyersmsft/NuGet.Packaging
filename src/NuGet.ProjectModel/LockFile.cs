@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NuGet.LibraryModel;
 
 namespace NuGet.ProjectModel
 {
@@ -38,7 +39,7 @@ namespace NuGet.ProjectModel
                 // If the framework name is empty, the associated dependencies are shared by all frameworks
                 if (string.IsNullOrEmpty(group.FrameworkName))
                 {
-                    actualDependencies = spec.Dependencies.Select(x => x.LibraryRange.ToString()).OrderBy(x => x);
+                    actualDependencies = spec.Dependencies.Select(x => RuntimeStyleLibraryRangeToString(x.LibraryRange)).OrderBy(x => x);
                 }
                 else
                 {
@@ -50,7 +51,7 @@ namespace NuGet.ProjectModel
                         return false;
                     }
 
-                    actualDependencies = framework.Dependencies.Select(d => d.LibraryRange.ToString()).OrderBy(x => x);
+                    actualDependencies = framework.Dependencies.Select(d => RuntimeStyleLibraryRangeToString(d.LibraryRange)).OrderBy(x => x);
                 }
 
                 if (!actualDependencies.SequenceEqual(expectedDependencies))
@@ -60,6 +61,17 @@ namespace NuGet.ProjectModel
             }
 
             return true;
+        }
+
+        // DNU REFACTORING TODO: temp hack to make generated lockfile work with runtime lockfile validation
+        private static string RuntimeStyleLibraryRangeToString(LibraryRange libraryRange)
+        {
+            return string.Format("{0} >= {1}.{2}.{3}{4}",
+                libraryRange.Name,
+                libraryRange.VersionRange.MinVersion.Version.Major,
+                libraryRange.VersionRange.MinVersion.Version.Minor,
+                libraryRange.VersionRange.MinVersion.Version.Build,
+                libraryRange.VersionRange.IsFloating ? "-*" : string.Empty);
         }
     }
 }
