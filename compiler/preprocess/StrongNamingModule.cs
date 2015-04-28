@@ -17,12 +17,12 @@ namespace NuGet.CommonModules.StrongNaming
 {
     public class StrongNamingModule : ICompileModule
     {
-        public void AfterCompile(IAfterCompileContext context)
+        public void AfterCompile(AfterCompileContext context)
         {
 
         }
 
-        public void BeforeCompile(IBeforeCompileContext context)
+        public void BeforeCompile(BeforeCompileContext context)
         {
             string keyPath = Environment.GetEnvironmentVariable("NUGET_BUILD_KEY_PATH");
             string delaySignString = Environment.GetEnvironmentVariable("NUGET_BUILD_DELAY_SIGN");
